@@ -60,7 +60,10 @@ go build memrun.go
 	<span class="token boolean">_</span><span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">=</span> syscall<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token function">int</span><span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">,</span> buffer<span class="token punctuation">)</span>
 
 	fdPath <span class="token operator">:=</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"/proc/self/fd/%d"</span><span class="token punctuation">,</span> fd<span class="token punctuation">)</span>
-	<span class="token boolean">_</span> <span class="token operator">=</span> syscall<span class="token punctuation">.</span><span class="token function">Exec</span><span class="token punctuation">(</span>fdPath<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span>displayName<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+	env <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span>
+		<span class="token string">"PATH=/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span>
+	<span class="token boolean">_</span> <span class="token operator">=</span> syscall<span class="token punctuation">.</span><span class="token function">Exec</span><span class="token punctuation">(</span>fdPath<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span>displayName<span class="token punctuation">}</span><span class="token punctuation">,</span> env<span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -72,5 +75,4 @@ go build memrun.go
 
 	<span class="token function">runFromMemory</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
-
 </code><button class="copy-code-button">复制</button></pre></div><div class="mod-footer mod-ui"></div></div></div></body></html>
