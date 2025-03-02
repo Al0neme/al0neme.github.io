@@ -18,7 +18,12 @@ ip route add 192.168.56.0/24 dev tun-goad
 </code><button class="copy-code-button">复制</button></pre></div><div class="el-h2 heading-wrapper"><h2 data-heading="arsenal" dir="auto" class="heading" id="arsenal"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>arsenal</h2><div class="heading-children"><div class="el-pre"><pre><code data-line="0">https://github.com/Orange-Cyberdefense/arsenal
 
 添加自定义md路径在arsenal/modules/config.py中
-</code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">一个md示例，命令行上面一行的标签和备注差不多，可要可不要</p></div><div class="el-pre"><pre class="language-text" tabindex="0"><code data-line="0" class="language-text is-loaded"># Dirsearch
+
+CHEATS_PATHS = [
+    #join(DATAPATH, "cheats"),  # DEFAULT
+    join(DATAPATH, "/home/administrator/workspace/test/arsenal-md"),
+]
+</code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">一个md示例，命令行上面一行的标签和备注差不多，可要可不要，threads默认值为10</p></div><div class="el-pre"><pre class="language-text" tabindex="0"><code data-line="0" class="language-text is-loaded"># Dirsearch
 
 ## Dirsearch php
 #plateform/multiple #target/remote #cat/dir_brute
@@ -29,8 +34,9 @@ dirsearch.py -e php -u &lt;url&gt;
 ## Dirsearch no 404
 #plateform/multiple #target/remote #cat/dir/brute
 \```
-dirsearch.py -e php -u &lt;url&gt; -t 20 -x 404
+dirsearch.py -e php -u &lt;url&gt; -t &lt;threads&gt; -x 404
 \```
+= threads: 10
 </code><button class="copy-code-button">复制</button></pre></div></div></div><div class="el-h2 heading-wrapper"><h2 data-heading="Spear" dir="auto" class="heading" id="Spear"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>Spear</h2><div class="heading-children"><div class="el-pre"><pre><code data-line="0">一个轻量自定义的渗透工具箱
 
 https://github.com/sspsec/Spear.git

