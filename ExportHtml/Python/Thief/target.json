@@ -1,0 +1,3 @@
+{"id": "uzqkcznf", "type": "aspx", "url": "http://192.168.16.129/demo.aspx", "pass": "pass", "key": "key", "header": ""}
+{"id": "x453a7j4", "type": "jsp", "url": "http://192.168.16.129:8080/shell.jsp", "pass": "pass", "key": "key", "header": ""}
+{"id": "oowbjdto", "type": "php", "url": "http://192.168.16.129:8082/shell.php", "pass": "pass", "key": "key", "header": ""}
