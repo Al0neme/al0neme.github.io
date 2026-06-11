@@ -1,30 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al0neme's Blog</title>
+    <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
+    <style>
+        /* ===== Reset & Base ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<title>Al0neme's Blog</title>
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: url('background.jpg') center/cover no-repeat fixed;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(240,247,255,0.88) 0%, rgba(230,242,255,0.92) 100%);
+            z-index: -1;
+        }
+
+        /* ===== Layout ===== */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+
+        /* ===== Header / Author Section ===== */
+        .author-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 36px;
+            padding: 28px 32px;
+            background: rgba(255,255,255,0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .author-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #4a90d9;
+            flex-shrink: 0;
+        }
+
+        .author-info {
+            flex: 1;
+        }
+
+        .author-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a6cb3;
+            margin-bottom: 4px;
+        }
+
+        .author-bio {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .author-links a {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 14px;
+            background: rgba(74,144,217,0.12);
+            color: #4a90d9;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .author-links a:hover {
+            background: rgba(74,144,217,0.25);
+        }
+
+        /* ===== Two Column Layout (Tags Left / Search Right) ===== */
+        .content-layout {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 36px;
+        }
+
+        .tags-section {
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ===== Tags Section (Left Side) ===== */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a6cb3;
+            margin-bottom: 16px;
+            padding-left: 4px;
+            border-left: 4px solid #4a90d9;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tag-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            background: rgba(74,144,217,0.15);
+            border: 1px solid rgba(74,144,217,0.3);
+            border-radius: 20px; /* rounded corners */
+            font-size: 14px;
+            color: #4a90d9;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .tag-btn:hover {
+            background: rgba(74,144,217,0.3);
+            border-color: rgba(74,144,217,0.5);
+            color: #1a6cb3;
+            transform: translateY(-2px);
+        }
+
+        /* ===== Search Section ===== */
+        .search-section {
+            margin-bottom: 0;
+        }
+
+        #search {
+            max-width: 600px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .container { padding: 24px 16px 48px; }
+            .author-section {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+                gap: 16px;
+            }
+            .author-avatar { width: 56px; height: 56px; border-width: 2px;}
+            .author-name { font-size: 18px; }
+
+            .content-layout {
+                flex-direction: column;
+            }
+
+            .tags-section {
+                width: 100%;
+            }
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            text-align: center;
+            padding: 36px 0 24px;
+            color: #999;
+            font-size: 13px;
+        }
+    </style>
+</head>
 <body>
-<div align="center"><b><font size="6">Al0neme😈，一条划水的咸鱼🐟，梦想是躺平😴</font></b></div>
-<br/>
-<div class="table-container"><table><tbody><tr><td valign="top" width="33%">哪有那么多的犹犹豫豫，只是还不够热爱罢了🚀</td></tr></tbody></table></div>
 
-<!--
-<div style="margin: 20px 0;">
-    🙂<a target="_blank" href="/HtmlWiki/ExportHtml/readme.html">📖 Wiki</a>
+<div class="container">
+
+    <!-- Author Section -->
+    <div class="author-section">
+        <img class="author-avatar" src="avatar.jpg" alt="Al0neme Avatar">
+        <div class="author-info">
+            <div class="author-name">Al0neme😈</div>
+            <div class="author-bio">一条划水的咸鱼🐟，梦想是躺平😴。哪有那么多的犹犹豫豫，只是还不够热爱罢了🚀</div>
+        </div>
+        <div class="author-links">
+            <a target="_blank" href="https://github.com/Al0neme">🚩 Github</a>
+        </div>
+    </div>
+
+    <!-- Content Layout: Tags Left / Search Right -->
+    <div class="content-layout">
+        <!-- Left Side: Author's Personal Tags -->
+        <div class="tags-section">
+            <h2 class="section-title">🏷️ About me</h2>
+            <div class="tags-container" id="tags-container">
+                <a href="#" class="tag-btn" data-tag="网络安全">🔒 网络安全</a>
+                <a href="#" class="tag-btn" data-tag="web">🌐 web</a>
+                <a href="#" class="tag-btn" data-tag="篮球">🏀 篮球</a>
+                <a href="#" class="tag-btn" data-tag="游戏">🎮 游戏</a>
+            </div>
+        </div>
+
+        <!-- Right Side: Search -->
+        <div class="search-wrapper">
+            <div class="search-section">
+                🔍 What do you want to search ? 🤔
+                <div id="search"></div>
+            </div>
+        </div>
+    </div>
+
 </div>
--->
 
-<div style="margin: 20px 0;">
-    😄<a target="_blank" href="https://github.com/Al0neme">🚩 Github</a>
-</div>
-
-
-🔍<b><font size="3">What do you want to search ?</font></b>🤔 <!-- 表情包 -->
-<!-- 引入UI资源 -->
+<!-- Pagefind UI -->
 <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
 <script src="/pagefind/pagefind-ui.js"></script>
-<div id="search"></div>
 <script>
-    // 创建UI插入点
-    window.addEventListener('DOMContentLoaded', (event) => {
+    // Initialize Pagefind search on the #search element
+    window.addEventListener('DOMContentLoaded', () => {
         new PagefindUI({ element: "#search", showSubResults: true });
+
+        // Tag button click handlers removed: tags are now just decorative links.
+        const tagsContainer = document.getElementById('tags-container');
+        if (tagsContainer) {
+            const tagLinks = tagsContainer.querySelectorAll('.tag-btn');
+            tagLinks.forEach(link => {
+                link.onclick = function(e) {
+                    e.preventDefault(); // Prevent default anchor jump
+                };
+            });
+        }
     });
 </script>
 </body>
+</html>
