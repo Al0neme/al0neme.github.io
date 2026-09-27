@@ -1,0 +1,14 @@
+<header class="site-header">
+  <a class="site-title" href="<%- url_for('/') %>">
+    <span class="title-icon">🌙</span>
+    <span><%= config.title %></span>
+  </a>
+  <nav class="site-nav">
+    <% for (const name in theme.menu) { %>
+      <% const target = theme.menu[name]; %>
+      <% const isActive = (target === '/' && (page.path === 'index.html' || page.path === '')) ||
+            (target !== '/' && ('/' + page.path).replace(/\/+$/, '').startsWith(target.replace(/\/+$/, ''))); %>
+      <a class="nav-link<%= isActive ? ' active' : '' %>" href="<%- url_for(target) %>"><%= name %></a>
+    <% } %>
+  </nav>
+</header>

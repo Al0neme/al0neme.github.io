@@ -1,0 +1,35 @@
+<section class="card profile-card">
+  <img class="avatar" src="<%- url_for(theme.avatar) %>" alt="<%= theme.profile.name %>">
+  <h1 class="profile-name"><%= theme.profile.name %></h1>
+  <p class="profile-bio"><%= theme.profile.bio %></p>
+  <% if (theme.profile.location) { %>
+    <p class="profile-location">📍 <%= theme.profile.location %></p>
+  <% } %>
+
+  <% if (theme.tags) { %>
+    <div class="tag-groups">
+      <% let gi = 0; %>
+      <% for (const group in theme.tags) { %>
+        <div class="tag-group">
+          <span class="tag-group-name"><%= group %></span>
+          <div class="tag-pills">
+            <% theme.tags[group].forEach((t, i) => { %>
+              <span class="pill pill-<%= (gi + i) % 6 %>"><%= t %></span>
+            <% }) %>
+          </div>
+        </div>
+        <% gi++; %>
+      <% } %>
+    </div>
+  <% } %>
+
+  <% if (theme.social) { %>
+    <div class="social-links">
+      <% for (const name in theme.social) { %>
+        <% if (theme.social[name]) { %>
+          <a class="social-link" href="<%- url_for(theme.social[name]) %>" target="_blank" rel="noopener"><%= name %></a>
+        <% } %>
+      <% } %>
+    </div>
+  <% } %>
+</section>

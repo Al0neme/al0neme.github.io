@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="<%= config.language || 'zh-CN' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= page.title ? page.title + ' | ' + config.title : config.title %></title>
+  <meta name="description" content="<%= config.description %>">
+  <meta name="root" content="<%- config.root %>">
+  <link rel="icon" href="<%= theme.avatar %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="<%- url_for('/css/style.css') %>">
+</head>
+<body>
+  <div class="bg" style="background-image:url('<%= theme.background %>')"></div>
+  <div class="wrapper">
+    <%- partial('_partial/header') %>
+    <div class="layout">
+      <main class="content">
+        <%- body %>
+      </main>
+      <aside class="sidebar">
+        <%- partial('_partial/search') %>
+        <%- partial('_partial/profile') %>
+        <%- partial('_partial/toc') %>
+      </aside>
+    </div>
+    <%- partial('_partial/footer') %>
+  </div>
+  <script src="<%- url_for('/js/search.js') %>"></script>
+  <script>
+    // 移动端：目录默认收起；点目录链接或空白处自动收起抽屉
+    (function () {
+      var toc = document.getElementById('toc-details');
+      if (!toc) return;
+      var mq = window.matchMedia('(max-width: 960px)');
+      if (mq.matches) toc.open = false;
+      toc.querySelectorAll('.toc-body a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          if (mq.matches) toc.open = false;
+        });
+      });
+      document.addEventListener('click', function (e) {
+        if (mq.matches && toc.open && !toc.contains(e.target)) toc.open = false;
+      });
+    })();
+  </script>
+</body>
+</html>

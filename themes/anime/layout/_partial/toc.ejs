@@ -1,0 +1,16 @@
+<% const isArticle = page.layout === 'post' || page.layout === 'page'; %>
+<% const tocHtml = isArticle && page.content ? toc(page.content, { list_number: false }) : ''; %>
+<% if (tocHtml) { %>
+  <details class="card toc-card" id="toc-details" open>
+    <summary class="toc-title">
+      <svg class="toc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 6.5C10.5 5 8.5 4.3 5 4.3c-.9 0-1.7.1-2.3.2v13.2c.6-.1 1.4-.2 2.3-.2 3.5 0 5.5.7 7 2.2 1.5-1.5 3.5-2.2 7-2.2.9 0 1.7.1 2.3.2V4.5c-.6-.1-1.4-.2-2.3-.2-3.5 0-5.5.7-7 2.2z"/>
+        <path d="M12 6.5v13.2"/>
+      </svg>
+      <span class="toc-label">文章目录</span>
+    </summary>
+    <div class="toc-body">
+      <%- tocHtml %>
+    </div>
+  </details>
+<% } %>

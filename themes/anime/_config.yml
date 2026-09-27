@@ -1,0 +1,31 @@
+# ===== 主题个人配置（想改资料就改这里）=====
+avatar: /images/avatar.jpg
+background: /images/background.jpg
+
+profile:
+  name: al0neme
+  bio: Back to zer0, start over
+  location: 地球·某处
+
+# 个人标签信息
+tags:
+  职业:
+    - 网络安全
+    - web
+    - vibe coding joker
+  爱好:
+    - 追番
+    - 打游戏 (添柴烧黏麻炒)
+    - 篮球
+  属性:
+    - 夜猫子
+    - 咖啡依赖
+
+# 社交链接（留空则不显示）
+social:
+  GitHub: https://github.com/Al0neme
+
+menu:
+  首页: /
+  归档: /archives
+  关于我: /about
