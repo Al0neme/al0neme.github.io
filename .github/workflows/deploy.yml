@@ -34,7 +34,17 @@ jobs:
         run: npm ci
 
       - name: Build site
-        run: npx hexo generate
+        run: |
+          npx hexo clean
+          npx hexo generate
+          # 保险：产物里放一个 .nojekyll（Actions 部署本身不跑 Jekyll，
+          # 但若以后改用「分支部署」，没有它就会让 GitHub 用 Jekyll 重新构建）
+          touch public/.nojekyll
+
+      - name: Fail fast if homepage is empty
+        run: |
+          test -s public/index.html || { echo "::error::public/index.html 为空，主题未生效（检查 _config.yml 的 theme）"; exit 1; }
+          test -s public/css/style.css || { echo "::error::缺少 public/css/style.css"; exit 1; }
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
